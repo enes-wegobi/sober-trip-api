@@ -30,6 +30,8 @@ export class Trip {
 
   @Prop()
   comment: string;
+
+  //TODO: add estimated trip time and cost
 }
 
 export const TripSchema = SchemaFactory.createForClass(Trip);

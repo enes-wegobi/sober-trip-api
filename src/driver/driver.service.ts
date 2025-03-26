@@ -1,6 +1,4 @@
 import { Injectable } from '@nestjs/common';
-import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
 import { Trip, TripDocument } from '../trip/schemas/trip.schema';
 import { TripStatus } from '../common/enums/trip-status.enum';
 import { TripException } from 'src/common/exceptions/trip.exception';
@@ -8,13 +6,13 @@ import { TripErrors } from 'src/common/exceptions/trip-errors';
 import { TripService } from 'src/trip/trip.service';
 import { MapClient } from 'src/common/client/map.client';
 import { UpdateTripDto } from 'src/trip/dto/update-trip.dto';
-import { TripGateway } from 'src/trip/trip.gateway';
+import { NotificationClient } from 'src/common/client/notification.client';
 
 @Injectable()
 export class DriverService {
   constructor(private readonly tripService: TripService,
     private readonly mapClient: MapClient,
-    private readonly tripGateway: TripGateway,
+    private readonly notificationClient: NotificationClient,
   ) {}
 
   async acceptTrip(tripId: string, driverId: string): Promise<Trip> {
@@ -48,8 +46,7 @@ export class DriverService {
           );
       }
 
-      // WebSocket üzerinden front-end'e güncellenmiş trip bilgisi gönderiliyor.
-      this.tripGateway.sendTripToDriver(updatedTrip);
+      this.notificationClient.sendTripNotificationToCustomer(updatedTrip.customerId, updatedTrip);
       return updatedTrip;
     }).catch(err => {
               throw new TripException(
@@ -73,13 +70,18 @@ export class DriverService {
             TripErrors.TRIP_COULD_NOT_FOUND.message,
           );
       }
-      this.tripGateway.sendTripNotifToCustomer(trip);
-      return trip;  
+      this.notificationClient.sendTripNotificationToCustomer(trip.customerId, trip);
+      return trip;
   }
 
   async completeTrip(tripId: string): Promise<TripDocument | null>{
     const trip = await this.tripService.completeTrip(tripId);
-    this.tripGateway.sendPaymentNotifToCustomer(trip);
-    return null;
+    if(!trip)
+      throw new TripException(
+        TripErrors.TRIP_COULD_NOT_FOUND.code,
+        TripErrors.TRIP_COULD_NOT_FOUND.message,
+      );
+    this.notificationClient.sendTripNotificationToCustomer(trip.customerId, trip);
+    return trip;
   }
 }

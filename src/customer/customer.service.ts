@@ -3,20 +3,20 @@ import { Trip, TripDocument } from '../trip/schemas/trip.schema';
 import { TripStatus } from '../common/enums/trip-status.enum';
 import { CreateTripDto } from '../trip/dto/create-trip.dto';
 import { MapClient } from '../common/client/map.client';
-import { TripGateway } from '../trip/trip.gateway';
 import { TripException } from 'src/common/exceptions/trip.exception';
 import { TripErrors } from 'src/common/exceptions/trip-errors';
 import { TripInformationsDto } from 'src/trip/dto/trip-informations.dto';
 import { UpdateTripDto } from 'src/trip/dto/update-trip.dto';
 import { TripRateDto } from 'src/trip/dto/trip-rate.dto';
 import { TripService } from 'src/trip/trip.service';
+import { NotificationClient } from 'src/common/client/notification.client';
 
 @Injectable()
 export class CustomerService {
   constructor(
     private readonly tripService: TripService,
     private readonly mapClient: MapClient,
-    private readonly tripGateway: TripGateway,
+    private readonly notificationClient: NotificationClient,
   ) {}
 
   async findTripInformations(tripData: CreateTripDto): Promise<TripInformationsDto> {
@@ -45,7 +45,7 @@ export class CustomerService {
       }
 
       // WebSocket üzerinden front-end'e güncellenmiş trip bilgisi gönderiliyor.
-      this.tripGateway.sendTripToDriver(updatedTrip);
+      this.notificationClient.sendTripNotificationToDriver(updatedTrip.driverId, updatedTrip);
       return updatedTrip;
     }).catch(err => {
               throw new TripException(
@@ -64,6 +64,8 @@ export class CustomerService {
 
 
   async cancelTrip(tripId: string) {
+    //TODO: 5 dakika kontrolü yap eğer geçtiyse ücret al yoksa iptal et
+    //TODO: notification'a redis ekle
     const trip = await this.tripService.updatetrip(tripId, { driverId: '', status: TripStatus.CANCELLED})
     if(!trip) {
       throw new TripException(

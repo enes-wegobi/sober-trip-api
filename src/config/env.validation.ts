@@ -7,4 +7,5 @@ export const validationSchema = Joi.object({
     .default('development'),
   MONGODB_URI: Joi.string().required(),
   MAP_API_URL: Joi.string().required(),
+  NOTIFICATION_API_URL: Joi.string().required(),
 });
