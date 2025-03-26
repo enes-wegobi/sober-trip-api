@@ -25,6 +25,6 @@ import { NotificationClient } from './common/client/notification.client';
   ],
   controllers: [CustomerController, DriverController],
   providers: [MapClient, NotificationClient],
-  exports: [MapClient]
+  exports: [MapClient],
 })
 export class AppModule {}

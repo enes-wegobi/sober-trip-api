@@ -1,14 +1,13 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
-import { Trip, TripDocument } from "./schemas/trip.schema";
+import { Trip, TripDocument } from './schemas/trip.schema';
 import { TripStatus } from '../common/enums/trip-status.enum';
 import { UpdateTripDto } from './dto/update-trip.dto';
 import { CreateTripDto } from './dto/create-trip.dto';
 
 @Injectable()
 export class TripRepository {
-
   constructor(
     @InjectModel(Trip.name)
     private readonly tripModel: Model<TripDocument>,
@@ -21,24 +20,26 @@ export class TripRepository {
     return createdTrip.save();
   }
 
-
   async findById(tripId: string): Promise<TripDocument | null> {
-    return this.tripModel.findById(
-     {_id: tripId}
-    );
+    return this.tripModel.findById({ _id: tripId });
   }
 
-  async findByIdAndUpdate(_id: any, tripData: UpdateTripDto): Promise<TripDocument | null>{
+  async findByIdAndUpdate(
+    _id: any,
+    tripData: UpdateTripDto,
+  ): Promise<TripDocument | null> {
     return this.tripModel.findByIdAndUpdate(
       _id,
-      { 
+      {
         ...tripData,
       },
       { new: true },
     );
   }
 
-  async findLatestPendingByCustomerId(customerId: string): Promise<TripDocument | null> {
+  async findLatestPendingByCustomerId(
+    customerId: string,
+  ): Promise<TripDocument | null> {
     return this.tripModel
       .findOne({
         customerId,
@@ -48,5 +49,4 @@ export class TripRepository {
       .sort({ createdAt: -1 })
       .exec();
   }
-
 }

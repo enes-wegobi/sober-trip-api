@@ -1,13 +1,11 @@
-import { IsNumber, IsOptional, IsString } from "class-validator";
+import { IsNumber, IsOptional, IsString } from 'class-validator';
 
 export class TripRateDto {
+  @IsNumber()
+  @IsOptional()
+  rating: number;
 
-    @IsNumber()
-    @IsOptional()
-    rating: number;
-
-    @IsString()
-    @IsOptional()
-    comment: string;
-
+  @IsString()
+  @IsOptional()
+  comment: string;
 }

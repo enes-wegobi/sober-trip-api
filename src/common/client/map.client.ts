@@ -11,11 +11,12 @@ export class MapClient {
     // MAP_SERVICE_URL environment değişkenini ayarlayabilirsiniz,
     // aksi halde dummy veri döndüren yapı kullanılacaktır.
     this.client = axios.create({
-      baseURL: this.configService.get<string>('MAP_API_URL') || 'http://dummy-map-service',
+      baseURL:
+        this.configService.get<string>('MAP_API_URL') ||
+        'http://dummy-map-service',
     });
   }
 
-    
   async getTripInformations(tripData: CreateTripDto): Promise<any> {
     /*
     const tripInformations = await this.client.post('/trip-informations', tripData).then(async (tripInformations) => {
@@ -33,14 +34,14 @@ export class MapClient {
     return {
       estimatedTime: 10,
       estimatedCost: 100,
-    }
+    };
   }
 
   async findDriver(tripData: any): Promise<any> {
     // Gerçek map servisi entegrasyonu yapılacaksa; örneğin:
     // const response = await this.client.post('/find-driver', tripData);
     // return response.data;
-    
+
     // Şimdilik dummy veri döndürülüyor:
     return {
       driverId: 'driver123',

@@ -1,4 +1,11 @@
-import { IsNotEmpty, IsString, IsArray, IsOptional, IsEnum, ValidateNested } from 'class-validator';
+import {
+  IsNotEmpty,
+  IsString,
+  IsArray,
+  IsOptional,
+  IsEnum,
+  ValidateNested,
+} from 'class-validator';
 import { TripStatus } from '../../common/enums/trip-status.enum';
 import { PaymentStatus } from '../../common/enums/payment-status.enum';
 

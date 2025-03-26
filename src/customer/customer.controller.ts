@@ -10,27 +10,32 @@ export class CustomerController {
   constructor(private readonly customerService: CustomerService) {}
 
   @Post('trip/confirm')
-  @ApiOperation({ summary: 'Trip onaylama: Trip verileri DB’ye kaydedilir ve şoför arama süreci başlar.' })
+  @ApiOperation({
+    summary:
+      'Trip onaylama: Trip verileri DB’ye kaydedilir ve şoför arama süreci başlar.',
+  })
   async confirmTrip(@Body() createTripDto: CreateTripDto) {
     const trip = await this.customerService.createTrip(createTripDto);
     return trip;
   }
 
   @Post('trip/cancel/:tripId')
-  @ApiOperation({ summary: 'Trip iptali: Trip verisi alınır ve iptal işlemi yapılır.' })
+  @ApiOperation({
+    summary: 'Trip iptali: Trip verisi alınır ve iptal işlemi yapılır.',
+  })
   @ApiQuery({ name: 'tripId', required: true, type: String })
-  async cancelTrip(
-    @Param('tripId') tripId: string,
-  ) {
+  async cancelTrip(@Param('tripId') tripId: string) {
     return await this.customerService.cancelTrip(tripId);
   }
 
   @Post('trip/rate/:tripId')
-  @ApiOperation({ summary: 'Trip iptali: Trip verisi alınır ve iptal işlemi yapılır.' })
+  @ApiOperation({
+    summary: 'Trip iptali: Trip verisi alınır ve iptal işlemi yapılır.',
+  })
   @ApiQuery({ name: 'tripId', required: true, type: String })
   async rateTrip(
     @Param('tripId') tripId: string,
-    @Body() tripRateDto: TripRateDto
+    @Body() tripRateDto: TripRateDto,
   ) {
     return await this.customerService.rateTrip(tripId, tripRateDto);
   }

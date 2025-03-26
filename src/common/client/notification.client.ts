@@ -14,9 +14,15 @@ export class NotificationClient {
     });
   }
 
-  async sendTripNotificationToDriver(driverId: string, tripInformations: any): Promise<any> {
+  async sendTripNotificationToDriver(
+    driverId: string,
+    tripInformations: any,
+  ): Promise<any> {
     try {
-      const response = await this.client.post(`/trip-notification-driver/${driverId}`, tripInformations);
+      const response = await this.client.post(
+        `/trip-notification-driver/${driverId}`,
+        tripInformations,
+      );
       return response.data;
     } catch (error) {
       throw new TripException(
@@ -26,9 +32,15 @@ export class NotificationClient {
     }
   }
 
-  async sendTripNotificationToCustomer(customerId: string, tripInformations: any): Promise<any> {
+  async sendTripNotificationToCustomer(
+    customerId: string,
+    tripInformations: any,
+  ): Promise<any> {
     try {
-      const response = await this.client.post(`/trip-notification-driver/${customerId}`, tripInformations);
+      const response = await this.client.post(
+        `/trip-notification-driver/${customerId}`,
+        tripInformations,
+      );
       return response.data;
     } catch (error) {
       throw new TripException(
