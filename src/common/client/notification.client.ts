@@ -1,4 +1,3 @@
-// src/notification-client/notification-client.ts
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '../../config/config.service';
 import axios, { AxiosInstance } from 'axios';
