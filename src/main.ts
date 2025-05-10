@@ -18,8 +18,8 @@ async function bootstrap() {
   });
 
   const config = new DocumentBuilder()
-    .setTitle('User API')
-    .setDescription('User API description')
+    .setTitle('Trip API')
+    .setDescription('Trip API description')
     .setVersion('1.0')
     .addBearerAuth()
     .addTag('auth')

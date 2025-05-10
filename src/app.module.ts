@@ -3,9 +3,10 @@ import { ConfigModule } from './config/config.module';
 import { DatabaseModule } from './database/database.module';
 import { HealthModule } from './health/health.module';
 import { MapsModule } from './common/clients/maps/maps.module';
+import { TripModule } from './trip/trip.module';
 
 @Module({
-  imports: [ConfigModule, DatabaseModule, HealthModule, MapsModule],
+  imports: [ConfigModule, DatabaseModule, HealthModule, MapsModule, TripModule],
   controllers: [],
   providers: [],
   exports: [],
