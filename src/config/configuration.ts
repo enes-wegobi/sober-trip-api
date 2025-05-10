@@ -7,4 +7,5 @@ export default () => ({
   //NOTIFICATION_API_URL: process.env.NOTIFICATION_API_URL,
   CORS_ORIGIN: process.env.CORS_ORIGIN || 'http://localhost:8080',
   GOOGLE_MAPS_API_KEY: process.env.GOOGLE_MAPS_API_KEY,
+  TRIP_COST_PER_MINUTE: parseFloat(process.env.TRIP_COST_PER_MINUTE || '1'),
 });

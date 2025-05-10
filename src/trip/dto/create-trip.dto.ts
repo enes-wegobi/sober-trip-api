@@ -5,9 +5,28 @@ import {
   IsOptional,
   IsEnum,
   ValidateNested,
+  IsNumber,
 } from 'class-validator';
+import { Type } from 'class-transformer';
 import { TripStatus } from '../../common/enums/trip-status.enum';
 import { PaymentStatus } from '../../common/enums/payment-status.enum';
+import { RoutePoint } from '../../common/clients/maps/maps.interface';
+
+export class RoutePointDto implements RoutePoint {
+  @IsNotEmpty()
+  @IsNumber()
+  lat: number;
+
+  @IsNotEmpty()
+  @IsNumber()
+  lon: number;
+
+  name?: string;
+
+  @IsNotEmpty()
+  @IsNumber()
+  order: number;
+}
 
 export class CreateTripDto {
   @IsNotEmpty()
@@ -19,7 +38,9 @@ export class CreateTripDto {
   driverId?: string;
 
   @IsArray()
-  stops: any[];
+  @ValidateNested({ each: true })
+  @Type(() => RoutePointDto)
+  route: RoutePointDto[];
 
   @IsEnum(TripStatus)
   status: TripStatus;
@@ -38,5 +59,15 @@ export class CreateTripDto {
   @IsString()
   comment?: string;
 
-  //
+  @IsOptional()
+  @IsNumber()
+  estimatedDistance?: number;
+
+  @IsOptional()
+  @IsNumber()
+  estimatedDuration?: number;
+
+  @IsOptional()
+  @IsNumber()
+  estimatedCost?: number;
 }

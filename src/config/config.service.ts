@@ -36,6 +36,10 @@ export class ConfigService {
     return this.configService.get('GOOGLE_MAPS_API_KEY', { infer: true });
   }
 
+  get tripCostPerMinute(): number {
+    return this.configService.get('TRIP_COST_PER_MINUTE', { infer: true });
+  }
+
   /*
   Example client
   get notificationApiUrl(): string {

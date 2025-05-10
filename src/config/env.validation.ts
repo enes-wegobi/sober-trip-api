@@ -11,6 +11,7 @@ const envSchema = z.object({
   //NOTIFICATION_API_URL: z.string().url(),
   CORS_ORIGIN: z.string().optional().default('http://localhost:8080'),
   GOOGLE_MAPS_API_KEY: z.string().min(1),
+  TRIP_COST_PER_MINUTE: z.coerce.number().positive().optional().default(1),
 });
 
 export type EnvironmentVariables = z.infer<typeof envSchema>;
