@@ -30,7 +30,7 @@ export class Trip {
 
   @Prop()
   comment: string;
-
+  //TODO: red eden driveridlerini
   //TODO: add estimated trip time and cost
 }
 

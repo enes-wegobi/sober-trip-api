@@ -26,6 +26,7 @@ export class CustomerService {
   }
 
   async createTrip(tripData: CreateTripDto): Promise<Trip> {
+    //ensure customer only one active trip
     let savedTrip: TripDocument;
     const existenceTrip = await this.tripService.findLatestPendingByCustomerId(
       tripData.customerId,
@@ -36,6 +37,11 @@ export class CustomerService {
     } else {
       savedTrip = existenceTrip;
     }
+
+    //başlangıç noktamız var
+
+    //map serviisine redise bağlansın
+    //başlangıç lat lon ,blocklanmış driverids map servisine atsın
 
     const updatedTrip = this.mapClient
       .findDriver(savedTrip)

@@ -1,31 +1,41 @@
 import { Injectable } from '@nestjs/common';
 import { ConfigService as NestConfigService } from '@nestjs/config';
+import { EnvironmentVariables } from './env.validation';
 
 @Injectable()
 export class ConfigService {
-  constructor(private configService: NestConfigService) {}
-
-  get<T>(key: string): T {
-    const value = this.configService.get<T>(key);
-    if (value === undefined) {
-      throw new Error(`Configuration key "${key}" is missing`);
-    }
-    return value;
-  }
+  constructor(
+    private configService: NestConfigService<EnvironmentVariables, true>,
+  ) {}
 
   get port(): number {
-    return this.get<number>('PORT');
+    return this.configService.get('PORT', { infer: true });
   }
 
-  get nodeEnv(): string {
-    return this.get<string>('NODE_ENV');
+  get nodeEnv(): EnvironmentVariables['NODE_ENV'] {
+    return this.configService.get('NODE_ENV', { infer: true });
   }
 
   get mongoUri(): string {
-    return this.get<string>('MONGODB_URI');
+    return this.configService.get('MONGODB_URI', { infer: true });
   }
 
-  get notificationApiUrl(): string {
-    return this.get<string>('MAP_API_URL');
+  get corsOrigin(): string {
+    return this.configService.get('CORS_ORIGIN', { infer: true });
   }
+
+  get mongoUser(): string {
+    return this.configService.get('MONGODB_USER', { infer: true });
+  }
+
+  get mongoPassword(): string {
+    return this.configService.get('MONGODB_PASSWORD', { infer: true });
+  }
+
+  /*
+  Example client
+  get notificationApiUrl(): string {
+    return this.configService.get('NOTIFICATION_API_URL', { infer: true });
+  }
+  */
 }

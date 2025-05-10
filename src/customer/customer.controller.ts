@@ -9,6 +9,7 @@ import { TripRateDto } from 'src/trip/dto/trip-rate.dto';
 export class CustomerController {
   constructor(private readonly customerService: CustomerService) {}
   //todo customers last trips paginated
+  //todo find user active trip
   @Post('trip/confirm')
   @ApiOperation({
     summary:

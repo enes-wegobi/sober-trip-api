@@ -1,22 +1,42 @@
-version: '3.8'
 services:
-  app:
-    build: .
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: 1drive-trip-api
+    restart: unless-stopped
     ports:
-      - '${PORT:-3000}:3000'
+      - "3000:3000"
+    environment:
+      - NODE_ENV=production
+      - PORT=3000
+      - MONGODB_URI=mongodb://mongodb:27017/trip
+      - MONGODB_USER=${MONGODB_USER}
+      - MONGODB_PASSWORD=${MONGODB_PASSWORD}
+      - CORS_ORIGIN=${CORS_ORIGIN:-http://localhost:8080}
     depends_on:
       - mongodb
-    environment:
-      - PORT=3000
-      - NODE_ENV=development
-      - MONGODB_URI=mongodb://mongodb:27017/sobertrip
-      - MAP_API_URL=http://map-service
+    networks:
+      - trip-network
+
   mongodb:
-    image: mongo:4.4
-    ports:
-      - '27017:27017'
+    image: mongo:7.0
+    container_name: trip-mongodb
+    restart: unless-stopped
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=${MONGODB_USER}
+      - MONGO_INITDB_ROOT_PASSWORD=${MONGODB_PASSWORD}
     volumes:
-      - mongo-data:/data/db
+      - mongodb_data:/data/db
+    ports:
+      - "27017:27017"
+    networks:
+      - trip-network
+
+networks:
+  trip-network:
+    driver: bridge
 
 volumes:
-  mongo-data:
+  mongodb_data:
+    driver: local

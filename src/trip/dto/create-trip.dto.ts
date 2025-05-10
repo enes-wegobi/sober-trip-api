@@ -37,4 +37,6 @@ export class CreateTripDto {
   @IsOptional()
   @IsString()
   comment?: string;
+
+  //
 }

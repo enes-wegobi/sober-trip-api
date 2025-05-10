@@ -17,6 +17,8 @@ export class DriverService {
   ) {}
 
   async acceptTrip(tripId: string, driverId: string): Promise<Trip> {
+    //tripin statusu kontrol
+    //lock koyulabilir
     const trip = await this.tripService.updatetrip(tripId, {
       driverId,
       status: TripStatus.ACCEPTED,
@@ -27,6 +29,7 @@ export class DriverService {
         TripErrors.TRIP_COULD_NOT_FOUND.message,
       );
     }
+
     return trip;
   }
 

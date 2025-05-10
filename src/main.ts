@@ -1,15 +1,34 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
-import { ConfigService } from './config/config.service';
 import { ValidationPipe } from '@nestjs/common';
-import { HttpExceptionFilter } from './common/exceptions/http-exception.filter';
+import { ConfigService } from './config/config.service';
+import { HttpExceptionFilter } from './exceptions/http-exception.filter';
+import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
-  app.useGlobalFilters(new HttpExceptionFilter());
   const configService = app.get(ConfigService);
-  await app.listen(configService.port);
 
+  const corsOrigins = configService.corsOrigin.split(',');
+  app.enableCors({
+    origin: corsOrigins,
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
+    credentials: true,
+    allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
+  });
+
+  const config = new DocumentBuilder()
+    .setTitle('User API')
+    .setDescription('User API description')
+    .setVersion('1.0')
+    .addBearerAuth()
+    .addTag('auth')
+    .build();
+
+  const document = SwaggerModule.createDocument(app, config);
+  SwaggerModule.setup('api-docs', app, document);
+
+  app.useGlobalFilters(new HttpExceptionFilter());
   app.useGlobalPipes(
     new ValidationPipe({
       whitelist: true,
@@ -17,7 +36,11 @@ async function bootstrap() {
     }),
   );
 
+  await app.listen(configService.port);
   console.log(`Application is running on: ${await app.getUrl()}`);
+  console.log(
+    `Swagger documentation is available at: ${await app.getUrl()}/api-docs`,
+  );
   console.log(`Environment: ${configService.nodeEnv}`);
 }
 bootstrap();
