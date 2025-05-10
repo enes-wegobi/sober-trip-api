@@ -1,6 +1,6 @@
 export enum TripStatus {
   PENDING = 'PENDING',
-  WAITING = 'WAITING', // Şoför bekleniyor
+  WAITING = 'WAITING',
   ACCEPTED = 'ACCEPTED',
   ACTIVE = 'ACTIVE',
   CANCELLED = 'CANCELLED',

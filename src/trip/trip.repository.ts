@@ -49,4 +49,26 @@ export class TripRepository {
       .sort({ createdAt: -1 })
       .exec();
   }
+
+  async findActiveByCustomerId(
+    customerId: string,
+  ): Promise<TripDocument | null> {
+    return this.tripModel
+      .findOne({
+        customerId,
+        status: TripStatus.ACTIVE,
+      })
+      .exec();
+  }
+
+  async findActiveByDriverId(
+    driverId: string,
+  ): Promise<TripDocument | null> {
+    return this.tripModel
+      .findOne({
+        driverId,
+        status: TripStatus.ACTIVE,
+      })
+      .exec();
+  }
 }

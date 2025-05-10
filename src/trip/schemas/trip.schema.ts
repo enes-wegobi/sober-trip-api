@@ -13,9 +13,6 @@ export class Trip {
   @Prop()
   driverId: string;
 
-  @Prop({ type: [Object] })
-  stops: any[];
-
   @Prop({ enum: TripStatus, default: TripStatus.PENDING })
   status: TripStatus;
 
@@ -35,3 +32,16 @@ export class Trip {
 }
 
 export const TripSchema = SchemaFactory.createForClass(Trip);
+
+// Create compound indexes for active trips
+// This ensures a customer can only have one active trip at a time
+TripSchema.index(
+  { customerId: 1, status: 1 },
+  { unique: true, partialFilterExpression: { status: TripStatus.ACTIVE } }
+);
+
+// This ensures a driver can only have one active trip at a time
+TripSchema.index(
+  { driverId: 1, status: 1 },
+  { unique: true, partialFilterExpression: { status: TripStatus.ACTIVE } }
+);
