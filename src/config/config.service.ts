@@ -32,6 +32,10 @@ export class ConfigService {
     return this.configService.get('MONGODB_PASSWORD', { infer: true });
   }
 
+  get googleMapsApiKey(): string {
+    return this.configService.get('GOOGLE_MAPS_API_KEY', { infer: true });
+  }
+
   /*
   Example client
   get notificationApiUrl(): string {

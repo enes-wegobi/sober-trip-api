@@ -6,4 +6,5 @@ export default () => ({
   MONGODB_PASSWORD: process.env.MONGODB_PASSWORD,
   //NOTIFICATION_API_URL: process.env.NOTIFICATION_API_URL,
   CORS_ORIGIN: process.env.CORS_ORIGIN || 'http://localhost:8080',
+  GOOGLE_MAPS_API_KEY: process.env.GOOGLE_MAPS_API_KEY,
 });

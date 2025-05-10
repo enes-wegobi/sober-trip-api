@@ -10,6 +10,7 @@ const envSchema = z.object({
   MONGODB_PASSWORD: z.string().min(1),
   //NOTIFICATION_API_URL: z.string().url(),
   CORS_ORIGIN: z.string().optional().default('http://localhost:8080'),
+  GOOGLE_MAPS_API_KEY: z.string().min(1),
 });
 
 export type EnvironmentVariables = z.infer<typeof envSchema>;
