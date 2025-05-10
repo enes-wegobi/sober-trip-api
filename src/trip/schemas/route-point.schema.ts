@@ -11,11 +11,8 @@ export class RoutePoint {
   @Prop({ required: true })
   lon: number;
 
-  @Prop()
-  name: string;
-
   @Prop({ required: true })
-  order: number;
+  name: string;
 }
 
 export const RoutePointSchema = SchemaFactory.createForClass(RoutePoint);

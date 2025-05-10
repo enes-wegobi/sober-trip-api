@@ -6,8 +6,7 @@ export interface Coordinates {
 export interface RoutePoint {
   lat: number;
   lon: number;
-  name?: string;
-  order: number;
+  name: string;
 }
 
 export interface DistanceResponse {

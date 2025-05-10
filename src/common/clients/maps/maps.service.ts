@@ -21,8 +21,8 @@ export class MapsService {
         );
       }
 
-      // Sort route points by order
-      const sortedPoints = [...routePoints].sort((a, b) => a.order - b.order);
+      // Use the natural array order
+      const sortedPoints = [...routePoints];
 
       // Get origin (first point) and destination (last point)
       const origin = sortedPoints[0];

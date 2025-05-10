@@ -21,16 +21,13 @@ export class RoutePointDto implements RoutePoint {
   @IsNumber()
   lon: number;
 
-  @ApiPropertyOptional({
+  @ApiProperty({
     description: 'Location name',
     example: 'Empire State Building',
   })
-  name?: string;
-
-  @ApiProperty({ description: 'Order of the point in the route', example: 1 })
+  @IsString()
   @IsNotEmpty()
-  @IsNumber()
-  order: number;
+  name: string;
 }
 
 export class EstimateTripDto {
