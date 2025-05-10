@@ -52,7 +52,7 @@ export class TripController {
   async estimateTrip(@Body() estimateTripDto: EstimateTripDto) {
     // Get distance matrix from Maps service
     const distanceMatrix = await this.mapsService.getDistanceMatrix(
-      estimateTripDto.routePoints,
+      estimateTripDto.route,
     );
 
     if (
@@ -77,7 +77,7 @@ export class TripController {
       customerId: estimateTripDto.customerId,
       status: TripStatus.DRAFT,
       paymentStatus: PaymentStatus.UNPAID,
-      route: estimateTripDto.routePoints,
+      route: estimateTripDto.route,
       estimatedDistance: distanceMatrix.distance.value,
       estimatedDuration: distanceMatrix.duration.value,
       estimatedCost,
