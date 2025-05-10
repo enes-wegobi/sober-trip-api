@@ -61,9 +61,7 @@ export class TripRepository {
       .exec();
   }
 
-  async findActiveByDriverId(
-    driverId: string,
-  ): Promise<TripDocument | null> {
+  async findActiveByDriverId(driverId: string): Promise<TripDocument | null> {
     return this.tripModel
       .findOne({
         driverId,

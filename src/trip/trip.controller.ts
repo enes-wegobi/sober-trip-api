@@ -18,8 +18,8 @@ export class TripController {
 
   @ApiOperation({ summary: 'Estimate trip cost and distance' })
   @ApiBody({ type: EstimateTripDto })
-  @ApiResponse({ 
-    status: 200, 
+  @ApiResponse({
+    status: 200,
     description: 'Trip estimated successfully',
     schema: {
       properties: {
@@ -32,21 +32,21 @@ export class TripController {
             estimatedDistance: { type: 'number', example: 5000 },
             estimatedDuration: { type: 'number', example: 1200 },
             estimatedCost: { type: 'number', example: 20 },
-            status: { type: 'string', example: 'DRAFT' }
-          }
-        }
-      }
-    }
+            status: { type: 'string', example: 'DRAFT' },
+          },
+        },
+      },
+    },
   })
-  @ApiResponse({ 
-    status: 400, 
+  @ApiResponse({
+    status: 400,
     description: 'Bad request or failed to calculate distance',
     schema: {
       properties: {
         success: { type: 'boolean', example: false },
-        message: { type: 'string', example: 'Failed to calculate distance' }
-      }
-    }
+        message: { type: 'string', example: 'Failed to calculate distance' },
+      },
+    },
   })
   @Post('estimate')
   async estimateTrip(@Body() estimateTripDto: EstimateTripDto) {
@@ -55,7 +55,11 @@ export class TripController {
       estimateTripDto.routePoints,
     );
 
-    if (!distanceMatrix.success || !distanceMatrix.duration || !distanceMatrix.distance) {
+    if (
+      !distanceMatrix.success ||
+      !distanceMatrix.duration ||
+      !distanceMatrix.distance
+    ) {
       return {
         success: false,
         message: distanceMatrix.message || 'Failed to calculate distance',
@@ -65,7 +69,8 @@ export class TripController {
     // Calculate estimated cost based on duration
     const durationInMinutes = distanceMatrix.duration.value / 60;
     const costPerMinute = this.configService.tripCostPerMinute;
-    const estimatedCost = Math.round((durationInMinutes * costPerMinute) * 100) / 100;
+    const estimatedCost =
+      Math.round(durationInMinutes * costPerMinute * 100) / 100;
 
     // Create a trip record
     const trip = await this.tripService.createTrip({

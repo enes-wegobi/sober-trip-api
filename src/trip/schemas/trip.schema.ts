@@ -40,7 +40,7 @@ export class Trip {
 
   @Prop()
   estimatedCost: number;
-  
+
   //TODO: red eden driveridlerini
 }
 
@@ -50,11 +50,14 @@ export const TripSchema = SchemaFactory.createForClass(Trip);
 // This ensures a customer can only have one active trip at a time
 TripSchema.index(
   { customerId: 1, status: 1 },
-  { unique: true, partialFilterExpression: { status: TripStatus.WAITING_FOR_DRIVER } }
+  {
+    unique: true,
+    partialFilterExpression: { status: TripStatus.WAITING_FOR_DRIVER },
+  },
 );
 
 // This ensures a driver can only have one active trip at a time
 TripSchema.index(
   { driverId: 1, status: 1 },
-  { unique: true, partialFilterExpression: { status: TripStatus.APPROVED } }
+  { unique: true, partialFilterExpression: { status: TripStatus.APPROVED } },
 );

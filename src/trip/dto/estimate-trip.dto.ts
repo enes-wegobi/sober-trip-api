@@ -1,4 +1,11 @@
-import { IsNotEmpty, IsString, IsArray, ValidateNested, ArrayMinSize, IsNumber } from 'class-validator';
+import {
+  IsNotEmpty,
+  IsString,
+  IsArray,
+  ValidateNested,
+  ArrayMinSize,
+  IsNumber,
+} from 'class-validator';
 import { Type } from 'class-transformer';
 import { RoutePoint } from '../../common/clients/maps/maps.interface';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
@@ -9,12 +16,15 @@ export class RoutePointDto implements RoutePoint {
   @IsNumber()
   lat: number;
 
-  @ApiProperty({ description: 'Longitude coordinate', example: -74.0060 })
+  @ApiProperty({ description: 'Longitude coordinate', example: -74.006 })
   @IsNotEmpty()
   @IsNumber()
   lon: number;
 
-  @ApiPropertyOptional({ description: 'Location name', example: 'Empire State Building' })
+  @ApiPropertyOptional({
+    description: 'Location name',
+    example: 'Empire State Building',
+  })
   name?: string;
 
   @ApiProperty({ description: 'Order of the point in the route', example: 1 })
@@ -24,14 +34,17 @@ export class RoutePointDto implements RoutePoint {
 }
 
 export class EstimateTripDto {
-  @ApiProperty({ description: 'Customer ID', example: '60a1b2c3d4e5f6a7b8c9d0e2' })
+  @ApiProperty({
+    description: 'Customer ID',
+    example: '60a1b2c3d4e5f6a7b8c9d0e2',
+  })
   @IsNotEmpty()
   @IsString()
   customerId: string;
 
-  @ApiProperty({ 
+  @ApiProperty({
     description: 'Array of route points (minimum 2 points required)',
-    type: [RoutePointDto]
+    type: [RoutePointDto],
   })
   @IsArray()
   @ArrayMinSize(2)

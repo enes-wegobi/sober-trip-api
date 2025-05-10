@@ -36,7 +36,9 @@ export class TripService {
     return this.tripRepository.findByIdAndUpdate(_id, tripData);
   }
 
-  async activateTrip(tripId: string): Promise<{ success: boolean; trip?: TripDocument; message?: string }> {
+  async activateTrip(
+    tripId: string,
+  ): Promise<{ success: boolean; trip?: TripDocument; message?: string }> {
     // Find the trip
     const trip = await this.findTrip(tripId);
     if (!trip) {
@@ -44,13 +46,18 @@ export class TripService {
     }
 
     // Check if the trip can be activated
-    const { canActivate, message } = await this.canActivateTrip(trip.customerId, trip.driverId);
+    const { canActivate, message } = await this.canActivateTrip(
+      trip.customerId,
+      trip.driverId,
+    );
     if (!canActivate) {
       return { success: false, message };
     }
 
     // Determine the new status based on whether a driver is assigned
-    const newStatus = trip.driverId ? TripStatus.APPROVED : TripStatus.WAITING_FOR_DRIVER;
+    const newStatus = trip.driverId
+      ? TripStatus.APPROVED
+      : TripStatus.WAITING_FOR_DRIVER;
 
     // Activate the trip
     const updatedTrip = await this.tripRepository.findByIdAndUpdate(tripId, {
@@ -70,14 +77,16 @@ export class TripService {
     });
   }
 
-
-  async canActivateTrip(customerId: string, driverId: string): Promise<{ canActivate: boolean; message?: string }> {
+  async canActivateTrip(
+    customerId: string,
+    driverId: string,
+  ): Promise<{ canActivate: boolean; message?: string }> {
     // Check if customer already has an active trip (WAITING_FOR_DRIVER status)
     const customerActiveTrip = await this.findActiveByCustomerId(customerId);
     if (customerActiveTrip) {
-      return { 
-        canActivate: false, 
-        message: `Customer already has an active trip with ID: ${customerActiveTrip._id}` 
+      return {
+        canActivate: false,
+        message: `Customer already has an active trip with ID: ${customerActiveTrip._id}`,
       };
     }
 
@@ -85,9 +94,9 @@ export class TripService {
     if (driverId) {
       const driverActiveTrip = await this.findActiveByDriverId(driverId);
       if (driverActiveTrip) {
-        return { 
-          canActivate: false, 
-          message: `Driver already has an active trip with ID: ${driverActiveTrip._id}` 
+        return {
+          canActivate: false,
+          message: `Driver already has an active trip with ID: ${driverActiveTrip._id}`,
         };
       }
     }
