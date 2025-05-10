@@ -1,6 +1,13 @@
 export interface Coordinates {
   lat: number;
-  lng: number;
+  lon: number;
+}
+
+export interface RoutePoint {
+  lat: number;
+  lon: number;
+  name?: string;
+  order: number;
 }
 
 export interface DistanceResponse {
@@ -13,6 +20,10 @@ export interface DistanceResponse {
     coordinates: string;
     address: string;
   };
+  waypoints?: {
+    coordinates: string;
+    address: string;
+  }[];
   distance?: {
     text: string;
     value: number; // meters

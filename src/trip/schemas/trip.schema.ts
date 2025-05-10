@@ -2,6 +2,7 @@ import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document } from 'mongoose';
 import { TripStatus } from '../../common/enums/trip-status.enum';
 import { PaymentStatus } from '../../common/enums/payment-status.enum';
+import { RoutePoint, RoutePointSchema } from './route-point.schema';
 
 export type TripDocument = Trip & Document;
 
@@ -27,8 +28,20 @@ export class Trip {
 
   @Prop()
   comment: string;
+
+  @Prop({ type: [{ type: RoutePointSchema }] })
+  route: RoutePoint[];
+
+  @Prop()
+  estimatedDistance: number; // meters
+
+  @Prop()
+  estimatedDuration: number; // seconds
+
+  @Prop()
+  estimatedCost: number;
+  
   //TODO: red eden driveridlerini
-  //TODO: add estimated trip time and cost
 }
 
 export const TripSchema = SchemaFactory.createForClass(Trip);

@@ -1,10 +1,14 @@
 export const TripErrors = {
-  TRIP_COULD_NOT_FOUND: {
+  INVALID_REQUEST: {
     code: 'T101',
-    message: 'Trip could not found.',
+    message: 'Invalid request. At least one origin and one destination point is required.',
   },
-  SOCKET_ERROR: {
+  INVALID_COORDINATES: {
     code: 'T102',
-    message: 'Web Socket Connection Error',
+    message: 'Invalid request. Origin and destination coordinates are required.',
+  },
+  MAPS_API_ERROR: {
+    code: 'T103',
+    message: 'Error occurred while communicating with Maps API.',
   },
 };
