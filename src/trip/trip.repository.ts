@@ -43,7 +43,7 @@ export class TripRepository {
     return this.tripModel
       .findOne({
         customerId,
-        status: TripStatus.PENDING,
+        status: TripStatus.DRAFT,
         driverId: null,
       })
       .sort({ createdAt: -1 })
@@ -56,7 +56,7 @@ export class TripRepository {
     return this.tripModel
       .findOne({
         customerId,
-        status: TripStatus.ACTIVE,
+        status: TripStatus.WAITING_FOR_DRIVER,
       })
       .exec();
   }
@@ -67,7 +67,7 @@ export class TripRepository {
     return this.tripModel
       .findOne({
         driverId,
-        status: TripStatus.ACTIVE,
+        status: TripStatus.APPROVED,
       })
       .exec();
   }

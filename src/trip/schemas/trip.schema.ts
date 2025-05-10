@@ -13,7 +13,7 @@ export class Trip {
   @Prop()
   driverId: string;
 
-  @Prop({ enum: TripStatus, default: TripStatus.PENDING })
+  @Prop({ enum: TripStatus, default: TripStatus.DRAFT })
   status: TripStatus;
 
   @Prop({ enum: PaymentStatus, default: PaymentStatus.UNPAID })
@@ -37,11 +37,11 @@ export const TripSchema = SchemaFactory.createForClass(Trip);
 // This ensures a customer can only have one active trip at a time
 TripSchema.index(
   { customerId: 1, status: 1 },
-  { unique: true, partialFilterExpression: { status: TripStatus.ACTIVE } }
+  { unique: true, partialFilterExpression: { status: TripStatus.WAITING_FOR_DRIVER } }
 );
 
 // This ensures a driver can only have one active trip at a time
 TripSchema.index(
   { driverId: 1, status: 1 },
-  { unique: true, partialFilterExpression: { status: TripStatus.ACTIVE } }
+  { unique: true, partialFilterExpression: { status: TripStatus.APPROVED } }
 );

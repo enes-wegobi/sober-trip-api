@@ -49,9 +49,12 @@ export class TripService {
       return { success: false, message };
     }
 
+    // Determine the new status based on whether a driver is assigned
+    const newStatus = trip.driverId ? TripStatus.APPROVED : TripStatus.WAITING_FOR_DRIVER;
+
     // Activate the trip
     const updatedTrip = await this.tripRepository.findByIdAndUpdate(tripId, {
-      status: TripStatus.ACTIVE,
+      status: newStatus,
     });
 
     if (!updatedTrip) {
@@ -63,13 +66,13 @@ export class TripService {
 
   async completeTrip(_id: string): Promise<TripDocument | null> {
     return this.tripRepository.findByIdAndUpdate(_id, {
-      status: TripStatus.PAYMENT_PENDING,
+      status: TripStatus.PAYMENT,
     });
   }
 
 
   async canActivateTrip(customerId: string, driverId: string): Promise<{ canActivate: boolean; message?: string }> {
-    // Check if customer already has an active trip
+    // Check if customer already has an active trip (WAITING_FOR_DRIVER status)
     const customerActiveTrip = await this.findActiveByCustomerId(customerId);
     if (customerActiveTrip) {
       return { 
@@ -78,13 +81,15 @@ export class TripService {
       };
     }
 
-    // Check if driver already has an active trip
-    const driverActiveTrip = await this.findActiveByDriverId(driverId);
-    if (driverActiveTrip) {
-      return { 
-        canActivate: false, 
-        message: `Driver already has an active trip with ID: ${driverActiveTrip._id}` 
-      };
+    // If driver is assigned, check if they already have an active trip (APPROVED status)
+    if (driverId) {
+      const driverActiveTrip = await this.findActiveByDriverId(driverId);
+      if (driverActiveTrip) {
+        return { 
+          canActivate: false, 
+          message: `Driver already has an active trip with ID: ${driverActiveTrip._id}` 
+        };
+      }
     }
 
     return { canActivate: true };
