@@ -103,4 +103,79 @@ export class TripService {
 
     return { canActivate: true };
   }
+
+  async callDrivers(
+    tripId: string,
+    customerId: string,
+    driverIds: string[],
+  ): Promise<{ success: boolean; trip?: TripDocument; message?: string }> {
+    const trip = await this.findTrip(tripId);
+    if (!trip) {
+      return { success: false, message: 'Trip not found' };
+    }
+
+    const customerActiveTrip = await this.findActiveByCustomerId(customerId);
+    if (
+      customerActiveTrip &&
+      customerActiveTrip._id &&
+      customerActiveTrip._id.toString() !== tripId
+    ) {
+      return {
+        success: false,
+        message: `Customer already has an active trip with ID: ${customerActiveTrip._id}`,
+      };
+    }
+
+    const currentRetryCount = trip.callRetryCount || 0;
+    const newRetryCount = currentRetryCount + 1;
+
+    const updateData: UpdateTripDto = {
+      status: TripStatus.WAITING_FOR_DRIVER,
+      calledDriverIds: driverIds,
+      customerId: customerId,
+      callStartTime: new Date(),
+      callRetryCount: newRetryCount,
+    };
+
+    const updatedTrip = await this.tripRepository.findByIdAndUpdate(
+      tripId,
+      updateData,
+    );
+
+    if (!updatedTrip) {
+      return { success: false, message: 'Failed to update trip status' };
+    }
+
+    return { success: true, trip: updatedTrip };
+  }
+
+  async rejectDriver(
+    tripId: string,
+    driverId: string,
+  ): Promise<{ success: boolean; trip?: TripDocument; message?: string }> {
+    // Find the trip
+    const trip = await this.findTrip(tripId);
+    if (!trip) {
+      return { success: false, message: 'Trip not found' };
+    }
+
+    // Get current rejectedDriverIds or initialize empty array
+    const rejectedDriverIds = trip.rejectedDriverIds || [];
+
+    // Add the driver ID to rejectedDriverIds if not already present
+    if (!rejectedDriverIds.includes(driverId)) {
+      rejectedDriverIds.push(driverId);
+    }
+
+    // Update the trip
+    const updatedTrip = await this.tripRepository.findByIdAndUpdate(tripId, {
+      rejectedDriverIds,
+    });
+
+    if (!updatedTrip) {
+      return { success: false, message: 'Failed to update trip' };
+    }
+
+    return { success: true, trip: updatedTrip };
+  }
 }

@@ -41,7 +41,17 @@ export class Trip {
   @Prop()
   estimatedCost: number;
 
-  //TODO: red eden driveridlerini
+  @Prop({ type: [String], default: [] })
+  calledDriverIds: string[];
+
+  @Prop({ type: [String], default: [] })
+  rejectedDriverIds: string[];
+
+  @Prop()
+  callStartTime: Date;
+
+  @Prop({ default: 0 })
+  callRetryCount: number;
 }
 
 export const TripSchema = SchemaFactory.createForClass(Trip);

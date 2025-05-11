@@ -13,4 +13,9 @@ export const TripErrors = {
     code: 'T103',
     message: 'Error occurred while communicating with Maps API.',
   },
+  NO_ROUTE_FOUND: {
+    code: 'T104',
+    message:
+      'No route found between the origin and destination. The locations may be separated by an ocean or other impassable barrier.',
+  },
 };

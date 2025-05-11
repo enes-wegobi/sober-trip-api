@@ -115,4 +115,39 @@ export class CreateTripDto {
   @IsOptional()
   @IsNumber()
   estimatedCost?: number;
+
+  @ApiPropertyOptional({
+    description: 'Array of driver IDs that have been called',
+    example: ['60a1b2c3d4e5f6a7b8c9d0e3', '60a1b2c3d4e5f6a7b8c9d0e4'],
+    type: [String],
+  })
+  @IsOptional()
+  @IsArray()
+  @IsString({ each: true })
+  calledDriverIds?: string[];
+
+  @ApiPropertyOptional({
+    description: 'Array of driver IDs that have rejected the trip',
+    example: ['60a1b2c3d4e5f6a7b8c9d0e5'],
+    type: [String],
+  })
+  @IsOptional()
+  @IsArray()
+  @IsString({ each: true })
+  rejectedDriverIds?: string[];
+
+  @ApiPropertyOptional({
+    description: 'Timestamp when drivers were called',
+    example: '2025-05-10T19:08:45.000Z',
+  })
+  @IsOptional()
+  callStartTime?: Date;
+
+  @ApiPropertyOptional({
+    description: 'Number of times drivers have been called for this trip',
+    example: 0,
+  })
+  @IsOptional()
+  @IsNumber()
+  callRetryCount?: number;
 }

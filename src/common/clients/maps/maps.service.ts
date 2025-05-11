@@ -88,7 +88,14 @@ export class MapsService {
       // Extract distance and duration information
       const distanceData = response.data.rows[0].elements[0];
 
-      // Prepare response
+      if (distanceData.status === 'ZERO_RESULTS') {
+        throw new TripException(
+          TripErrors.NO_ROUTE_FOUND.code,
+          TripErrors.NO_ROUTE_FOUND.message,
+          HttpStatus.BAD_REQUEST,
+        );
+      }
+
       const result: DistanceResponse = {
         success: true,
         origin: {
