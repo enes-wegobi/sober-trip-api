@@ -196,17 +196,16 @@ export class TripService {
 
     // Check if an active trip was found
     if (!trip) {
-      return { 
-        success: false, 
-        message: `No active trip found for ${userType} with ID: ${userId}` 
+      return {
+        success: false,
+        message: `No active trip found for ${userType} with ID: ${userId}`,
       };
     }
 
     // Update the trip status to CANCELLED
-    const updatedTrip = await this.tripRepository.findByIdAndUpdate(
-      trip._id,
-      { status: TripStatus.CANCELLED },
-    );
+    const updatedTrip = await this.tripRepository.findByIdAndUpdate(trip._id, {
+      status: TripStatus.CANCELLED,
+    });
 
     if (!updatedTrip) {
       return { success: false, message: 'Failed to cancel trip' };
