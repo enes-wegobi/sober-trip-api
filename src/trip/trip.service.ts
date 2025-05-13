@@ -178,4 +178,40 @@ export class TripService {
 
     return { success: true, trip: updatedTrip };
   }
+
+  async cancelTrip(
+    userId: string,
+    userType: string,
+  ): Promise<{ success: boolean; trip?: TripDocument; message?: string }> {
+    let trip: TripDocument | null;
+
+    // Find the active trip based on user type
+    if (userType === 'customer') {
+      trip = await this.findActiveByCustomerId(userId);
+    } else if (userType === 'driver') {
+      trip = await this.findActiveByDriverId(userId);
+    } else {
+      return { success: false, message: 'Invalid user type' };
+    }
+
+    // Check if an active trip was found
+    if (!trip) {
+      return { 
+        success: false, 
+        message: `No active trip found for ${userType} with ID: ${userId}` 
+      };
+    }
+
+    // Update the trip status to CANCELLED
+    const updatedTrip = await this.tripRepository.findByIdAndUpdate(
+      trip._id,
+      { status: TripStatus.CANCELLED },
+    );
+
+    if (!updatedTrip) {
+      return { success: false, message: 'Failed to cancel trip' };
+    }
+
+    return { success: true, trip: updatedTrip };
+  }
 }

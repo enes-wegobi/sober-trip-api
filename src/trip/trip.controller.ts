@@ -4,6 +4,7 @@ import { MapsService } from '../common/clients/maps/maps.service';
 import { EstimateTripDto } from './dto/estimate-trip.dto';
 import { CallDriversDto } from './dto/call-drivers.dto';
 import { RejectDriverDto } from './dto/reject-driver.dto';
+import { CancelTripDto } from './dto/cancel-trip.dto';
 import { ConfigService } from '../config/config.service';
 import { TripStatus } from '../common/enums/trip-status.enum';
 import { PaymentStatus } from '../common/enums/payment-status.enum';
@@ -97,6 +98,28 @@ export class TripController {
       return {
         success: false,
         message: result.message || 'Failed to reject driver',
+      };
+    }
+
+    return {
+      success: true,
+      trip: result.trip,
+    };
+  }
+
+  @ApiOperation({ summary: 'Cancel an active trip' })
+  @ApiBody({ type: CancelTripDto })
+  @Post('cancel')
+  async cancelTrip(@Body() cancelTripDto: CancelTripDto) {
+    const result = await this.tripService.cancelTrip(
+      cancelTripDto.userId,
+      cancelTripDto.userType,
+    );
+
+    if (!result.success || !result.trip) {
+      return {
+        success: false,
+        message: result.message || 'Failed to cancel trip',
       };
     }
 
