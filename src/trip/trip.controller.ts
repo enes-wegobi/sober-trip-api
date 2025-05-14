@@ -215,4 +215,27 @@ export class TripController {
       trip: result.trip,
     };
   }
+
+  @ApiOperation({ summary: 'Approve trip with driver' })
+  @ApiParam({ name: 'tripId', description: 'Trip ID' })
+  @ApiBody({ type: Object, schema: { properties: { driverId: { type: 'string' } } } })
+  @Post(':tripId/approve')
+  async approveTrip(
+    @Param('tripId') tripId: string,
+    @Body('driverId') driverId: string,
+  ) {
+    const result = await this.tripService.approveTrip(tripId, driverId);
+
+    if (!result.success || !result.trip) {
+      return {
+        success: false,
+        message: result.message || 'Failed to approve trip',
+      };
+    }
+
+    return {
+      success: true,
+      trip: result.trip,
+    };
+  }
 }
