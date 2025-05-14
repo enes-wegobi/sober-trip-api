@@ -12,7 +12,7 @@ export class RedisService {
       host: this.configService.valkeyHost,
       port: this.configService.valkeyPort,
       password: this.configService.valkeyPassword,
-      username: this.configService.valkeyUsername, // If provided
+      username: this.configService.valkeyUsername,
       tls: this.configService.valkeyTls ? {} : undefined,
     });
 

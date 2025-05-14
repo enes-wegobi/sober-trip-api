@@ -8,4 +8,10 @@ export default () => ({
   CORS_ORIGIN: process.env.CORS_ORIGIN || 'http://localhost:8080',
   GOOGLE_MAPS_API_KEY: process.env.GOOGLE_MAPS_API_KEY,
   TRIP_COST_PER_MINUTE: parseFloat(process.env.TRIP_COST_PER_MINUTE || '1'),
+  // Valkey DB configuration
+  VALKEY_HOST: process.env.VALKEY_HOST || 'localhost',
+  VALKEY_PORT: parseInt(process.env.VALKEY_PORT || '6379', 10),
+  VALKEY_PASSWORD: process.env.VALKEY_PASSWORD,
+  VALKEY_USERNAME: process.env.VALKEY_USERNAME,
+  VALKEY_TLS: process.env.VALKEY_TLS || 'false',
 });

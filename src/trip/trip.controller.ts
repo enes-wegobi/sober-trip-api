@@ -1,4 +1,4 @@
-import { Controller, Post, Body, Param, Get } from '@nestjs/common';
+import { Controller, Post, Body, Param, Get, Query } from '@nestjs/common';
 import { TripService } from './trip.service';
 import { MapsService } from '../common/clients/maps/maps.service';
 import { EstimateTripDto } from './dto/estimate-trip.dto';
@@ -9,7 +9,13 @@ import { UpdateTripDto } from './dto/update-trip.dto';
 import { ConfigService } from '../config/config.service';
 import { TripStatus } from '../common/enums/trip-status.enum';
 import { PaymentStatus } from '../common/enums/payment-status.enum';
-import { ApiTags, ApiOperation, ApiBody, ApiParam } from '@nestjs/swagger';
+import {
+  ApiTags,
+  ApiOperation,
+  ApiBody,
+  ApiParam,
+  ApiQuery,
+} from '@nestjs/swagger';
 
 @ApiTags('trips')
 @Controller('trips')
