@@ -218,7 +218,10 @@ export class TripController {
 
   @ApiOperation({ summary: 'Approve trip with driver' })
   @ApiParam({ name: 'tripId', description: 'Trip ID' })
-  @ApiBody({ type: Object, schema: { properties: { driverId: { type: 'string' } } } })
+  @ApiBody({
+    type: Object,
+    schema: { properties: { driverId: { type: 'string' } } },
+  })
   @Post(':tripId/approve')
   async approveTrip(
     @Param('tripId') tripId: string,

@@ -216,73 +216,69 @@ export class TripService {
     customerId: string,
     driverIds: string[],
   ): Promise<{ success: boolean; trip?: TripDocument; message?: string }> {
+    const trip = await this.findTrip(tripId);
+    if (!trip) {
+      return { success: false, message: TripErrors.TRIP_NOT_FOUND.message };
+    }
 
-        const trip = await this.findTrip(tripId);
-        if (!trip) {
-          return { success: false, message: TripErrors.TRIP_NOT_FOUND.message };
-        }
+    const statusValidation = this.tripStateService.validateStatus(
+      trip.status,
+      TripStatus.DRAFT,
+    );
+    if (!statusValidation.valid) {
+      return {
+        success: false,
+        message:
+          statusValidation.message || TripErrors.TRIP_INVALID_STATUS.message,
+      };
+    }
 
-        const statusValidation = this.tripStateService.validateStatus(
-          trip.status,
-          TripStatus.DRAFT,
-        );
-        if (!statusValidation.valid) {
-          return {
-            success: false,
-            message:
-              statusValidation.message ||
-              TripErrors.TRIP_INVALID_STATUS.message,
-          };
-        }
+    const customerActiveTrip = await this.findActiveByCustomerId(customerId);
+    if (
+      customerActiveTrip &&
+      customerActiveTrip.id &&
+      customerActiveTrip.id !== tripId
+    ) {
+      return {
+        success: false,
+        message: `Customer already has an active trip with ID: ${customerActiveTrip.id}`,
+      };
+    }
 
-        const customerActiveTrip =
-          await this.findActiveByCustomerId(customerId);
-        if (
-          customerActiveTrip &&
-          customerActiveTrip.id &&
-          customerActiveTrip.id !== tripId
-        ) {
-          return {
-            success: false,
-            message: `Customer already has an active trip with ID: ${customerActiveTrip.id}`,
-          };
-        }
+    const currentRetryCount = trip.callRetryCount || 0;
+    const newRetryCount = currentRetryCount + 1;
 
-        const currentRetryCount = trip.callRetryCount || 0;
-        const newRetryCount = currentRetryCount + 1;
+    const transitionValidation = this.tripStateService.canTransition(
+      trip.status,
+      TripStatus.WAITING_FOR_DRIVER,
+    );
+    if (!transitionValidation.valid) {
+      return {
+        success: false,
+        message:
+          transitionValidation.message ||
+          TripErrors.TRIP_INVALID_STATUS.message,
+      };
+    }
 
-        const transitionValidation = this.tripStateService.canTransition(
-          trip.status,
-          TripStatus.WAITING_FOR_DRIVER,
-        );
-        if (!transitionValidation.valid) {
-          return {
-            success: false,
-            message:
-              transitionValidation.message ||
-              TripErrors.TRIP_INVALID_STATUS.message,
-          };
-        }
+    const updateData: UpdateTripDto = {
+      status: TripStatus.WAITING_FOR_DRIVER,
+      calledDriverIds: driverIds,
+      customerId: customerId,
+      callStartTime: new Date(),
+      callRetryCount: newRetryCount,
+    };
 
-        const updateData: UpdateTripDto = {
-          status: TripStatus.WAITING_FOR_DRIVER,
-          calledDriverIds: driverIds,
-          customerId: customerId,
-          callStartTime: new Date(),
-          callRetryCount: newRetryCount,
-        };
+    const updatedTrip = await this.tripRepository.findByIdAndUpdate(
+      tripId,
+      updateData,
+    );
 
-        const updatedTrip = await this.tripRepository.findByIdAndUpdate(
-          tripId,
-          updateData,
-        );
+    if (!updatedTrip) {
+      return { success: false, message: 'Failed to update trip status' };
+    }
 
-        if (!updatedTrip) {
-          return { success: false, message: 'Failed to update trip status' };
-        }
-
-        return { success: true, trip: updatedTrip };
-    
+    return { success: true, trip: updatedTrip };
   }
 
   async rejectDriver(
@@ -403,47 +399,42 @@ export class TripService {
     tripId: string,
     driverId: string,
   ): Promise<{ success: boolean; trip?: TripDocument; message?: string }> {
+    const trip = await this.findTrip(tripId);
+    if (!trip) {
+      return { success: false, message: TripErrors.TRIP_NOT_FOUND.message };
+    }
 
-        const trip = await this.findTrip(tripId);
-        if (!trip) {
-          return { success: false, message: TripErrors.TRIP_NOT_FOUND.message };
-        }
+    const transitionValidation = this.tripStateService.canTransition(
+      trip.status,
+      TripStatus.APPROVED,
+    );
+    if (!transitionValidation.valid) {
+      return {
+        success: false,
+        message:
+          transitionValidation.message ||
+          TripErrors.TRIP_INVALID_STATUS.message,
+      };
+    }
 
-        const transitionValidation = this.tripStateService.canTransition(
-          trip.status,
-          TripStatus.APPROVED,
-        );
-        if (!transitionValidation.valid) {
-          return {
-            success: false,
-            message:
-              transitionValidation.message ||
-              TripErrors.TRIP_INVALID_STATUS.message,
-          };
-        }
+    // Check if driver already has an active trip
+    const driverActiveTrip = await this.findActiveByDriverId(driverId);
+    if (driverActiveTrip) {
+      return {
+        success: false,
+        message: `Driver already has an active trip with ID: ${driverActiveTrip.id}`,
+      };
+    }
 
-        // Check if driver already has an active trip
-        const driverActiveTrip = await this.findActiveByDriverId(driverId);
-        if (driverActiveTrip) {
-          return {
-            success: false,
-            message: `Driver already has an active trip with ID: ${driverActiveTrip.id}`,
-          };
-        }
+    const updatedTrip = await this.tripRepository.findByIdAndUpdate(tripId, {
+      driverId,
+      status: TripStatus.APPROVED,
+    });
 
-        const updatedTrip = await this.tripRepository.findByIdAndUpdate(
-          tripId,
-          {
-            driverId,
-            status: TripStatus.APPROVED,
-          },
-        );
+    if (!updatedTrip) {
+      return { success: false, message: 'Failed to approve trip' };
+    }
 
-        if (!updatedTrip) {
-          return { success: false, message: 'Failed to approve trip' };
-        }
-
-        return { success: true, trip: updatedTrip };
-     
+    return { success: true, trip: updatedTrip };
   }
 }
