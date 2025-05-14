@@ -238,4 +238,42 @@ export class TripController {
       trip: result.trip,
     };
   }
+
+  @ApiOperation({ summary: 'Get active trip for driver' })
+  @ApiParam({ name: 'driverId', description: 'Driver ID' })
+  @Post('active/:driverId')
+  async getDriverActiveTrip(@Param('driverId') driverId: string) {
+    const trip = await this.tripService.findActiveByDriverId(driverId);
+
+    if (!trip) {
+      return {
+        success: false,
+        message: 'No active trip found for this driver',
+      };
+    }
+
+    return {
+      success: true,
+      trip,
+    };
+  }
+
+  @ApiOperation({ summary: 'Get active trip for customer' })
+  @ApiParam({ name: 'customerId', description: 'Customer ID' })
+  @Post('active/:customerId')
+  async getCustomerActiveTrip(@Param('customerId') customerId: string) {
+    const trip = await this.tripService.findActiveByCustomerId(customerId);
+
+    if (!trip) {
+      return {
+        success: false,
+        message: 'No active trip found for this customer',
+      };
+    }
+
+    return {
+      success: true,
+      trip,
+    };
+  }
 }
