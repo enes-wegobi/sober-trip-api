@@ -6,14 +6,17 @@ import { TripService } from './trip.service';
 import { TripController } from './trip.controller';
 import { MapsModule } from '../common/clients/maps/maps.module';
 import { ConfigModule } from '../config/config.module';
+import { LockModule } from '../common/lock/lock.module';
+import { TripStateService } from './trip-state.service';
 
 @Module({
   imports: [
     MongooseModule.forFeature([{ name: Trip.name, schema: TripSchema }]),
     MapsModule,
     ConfigModule,
+    LockModule,
   ],
-  providers: [TripService, TripRepository],
+  providers: [TripService, TripRepository, TripStateService],
   controllers: [TripController],
   exports: [TripService],
 })

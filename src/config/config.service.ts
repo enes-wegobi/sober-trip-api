@@ -40,6 +40,31 @@ export class ConfigService {
     return this.configService.get('TRIP_COST_PER_MINUTE', { infer: true });
   }
 
+  // Valkey DB configuration
+  get valkeyHost(): string {
+    return (
+      this.configService.get('VALKEY_HOST', { infer: true }) || 'localhost'
+    );
+  }
+
+  get valkeyPort(): number {
+    return this.configService.get('VALKEY_PORT', { infer: true })
+      ? parseInt(this.configService.get('VALKEY_PORT', { infer: true }))
+      : 6379;
+  }
+
+  get valkeyPassword(): string | undefined {
+    return this.configService.get('VALKEY_PASSWORD', { infer: true });
+  }
+
+  get valkeyUsername(): string | undefined {
+    return this.configService.get('VALKEY_USERNAME', { infer: true });
+  }
+
+  get valkeyTls(): boolean {
+    return this.configService.get('VALKEY_TLS', { infer: true }) === 'true';
+  }
+
   /*
   Example client
   get notificationApiUrl(): string {

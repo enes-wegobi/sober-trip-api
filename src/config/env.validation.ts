@@ -12,6 +12,12 @@ const envSchema = z.object({
   CORS_ORIGIN: z.string().optional().default('http://localhost:8080'),
   GOOGLE_MAPS_API_KEY: z.string().min(1),
   TRIP_COST_PER_MINUTE: z.coerce.number().positive().optional().default(1),
+  // Valkey DB configuration
+  VALKEY_HOST: z.string().optional().default('localhost'),
+  VALKEY_PORT: z.coerce.number().int().positive().optional().default(6379),
+  VALKEY_PASSWORD: z.string().optional(),
+  VALKEY_USERNAME: z.string().optional(),
+  VALKEY_TLS: z.string().optional().default('false'),
 });
 
 export type EnvironmentVariables = z.infer<typeof envSchema>;

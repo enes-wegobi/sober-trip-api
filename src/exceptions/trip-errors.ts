@@ -1,4 +1,21 @@
 export const TripErrors = {
+  TRIP_LOCKED: {
+    code: 'T101',
+    message:
+      'Bu trip şu anda başka bir işlem tarafından kullanılıyor. Lütfen daha sonra tekrar deneyin.',
+  },
+  LOCK_ACQUISITION_FAILED: {
+    code: 'T102',
+    message: 'İşlem kilidi alınamadı. Lütfen daha sonra tekrar deneyin.',
+  },
+  TRIP_INVALID_STATUS: {
+    code: 'T103',
+    message: 'Trip geçersiz durumda, bu işlem gerçekleştirilemez.',
+  },
+  TRIP_NOT_FOUND: {
+    code: 'T104',
+    message: 'Trip bulunamadı.',
+  },
   /* example errors
   PROMOTION_CODE_EXISTS: {
     code: 'P101',

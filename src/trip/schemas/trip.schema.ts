@@ -3,11 +3,12 @@ import { Document } from 'mongoose';
 import { TripStatus } from '../../common/enums/trip-status.enum';
 import { PaymentStatus } from '../../common/enums/payment-status.enum';
 import { RoutePoint, RoutePointSchema } from './route-point.schema';
+import { EntityDocumentHelper } from 'src/common/utils/document-helper';
 
 export type TripDocument = Trip & Document;
 
 @Schema({ timestamps: true })
-export class Trip {
+export class Trip extends EntityDocumentHelper {
   @Prop({ required: true })
   customerId: string;
 

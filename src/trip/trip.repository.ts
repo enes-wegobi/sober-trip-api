@@ -20,16 +20,16 @@ export class TripRepository {
     return createdTrip.save();
   }
 
-  async findById(tripId: string): Promise<TripDocument | null> {
-    return this.tripModel.findById({ _id: tripId });
+  async findById(id: string): Promise<TripDocument | null> {
+    return this.tripModel.findById(id);
   }
 
   async findByIdAndUpdate(
-    _id: any,
+    id: string,
     tripData: UpdateTripDto,
   ): Promise<TripDocument | null> {
     return this.tripModel.findByIdAndUpdate(
-      _id,
+      id,
       {
         ...tripData,
       },
