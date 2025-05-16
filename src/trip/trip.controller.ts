@@ -1,21 +1,13 @@
-import { Controller, Post, Body, Param, Get, Query } from '@nestjs/common';
+import { Controller, Post, Body, Param, Get } from '@nestjs/common';
 import { TripService } from './trip.service';
 import { MapsService } from '../common/clients/maps/maps.service';
 import { EstimateTripDto } from './dto/estimate-trip.dto';
 import { CallDriversDto } from './dto/call-drivers.dto';
-import { RejectDriverDto } from './dto/reject-driver.dto';
-import { CancelTripDto } from './dto/cancel-trip.dto';
 import { UpdateTripDto } from './dto/update-trip.dto';
 import { ConfigService } from '../config/config.service';
 import { TripStatus } from '../common/enums/trip-status.enum';
 import { PaymentStatus } from '../common/enums/payment-status.enum';
-import {
-  ApiTags,
-  ApiOperation,
-  ApiBody,
-  ApiParam,
-  ApiQuery,
-} from '@nestjs/swagger';
+import { ApiTags, ApiOperation, ApiBody, ApiParam } from '@nestjs/swagger';
 
 @ApiTags('trips')
 @Controller('trips')
@@ -94,50 +86,6 @@ export class TripController {
     return result;
   }
 
-  @ApiOperation({ summary: 'Reject driver for a trip' })
-  @ApiBody({ type: RejectDriverDto })
-  @Post('reject-driver')
-  async rejectDriver(@Body() rejectDriverDto: RejectDriverDto) {
-    const result = await this.tripService.rejectDriver(
-      rejectDriverDto.tripId,
-      rejectDriverDto.driverId,
-    );
-
-    if (!result.success || !result.trip) {
-      return {
-        success: false,
-        message: result.message || 'Failed to reject driver',
-      };
-    }
-
-    return {
-      success: true,
-      trip: result.trip,
-    };
-  }
-
-  @ApiOperation({ summary: 'Cancel an active trip' })
-  @ApiBody({ type: CancelTripDto })
-  @Post('cancel')
-  async cancelTrip(@Body() cancelTripDto: CancelTripDto) {
-    const result = await this.tripService.cancelTrip(
-      cancelTripDto.userId,
-      cancelTripDto.userType,
-    );
-
-    if (!result.success || !result.trip) {
-      return {
-        success: false,
-        message: result.message || 'Failed to cancel trip',
-      };
-    }
-
-    return {
-      success: true,
-      trip: result.trip,
-    };
-  }
-
   @ApiOperation({ summary: 'Get trip by ID' })
   @ApiParam({ name: 'tripId', description: 'Trip ID' })
   @Get(':tripId')
@@ -180,45 +128,7 @@ export class TripController {
     };
   }
 
-  @ApiOperation({ summary: 'Complete trip (move to payment)' })
-  @ApiParam({ name: 'tripId', description: 'Trip ID' })
-  @Post(':tripId/complete')
-  async completeTrip(@Param('tripId') tripId: string) {
-    const result = await this.tripService.completeTrip(tripId);
-
-    if (!result.success || !result.trip) {
-      return {
-        success: false,
-        message: result.message || 'Failed to complete trip',
-      };
-    }
-
-    return {
-      success: true,
-      trip: result.trip,
-    };
-  }
-
-  @ApiOperation({ summary: 'Activate trip' })
-  @ApiParam({ name: 'tripId', description: 'Trip ID' })
-  @Post(':tripId/activate')
-  async activateTrip(@Param('tripId') tripId: string) {
-    const result = await this.tripService.activateTrip(tripId);
-
-    if (!result.success || !result.trip) {
-      return {
-        success: false,
-        message: result.message || 'Failed to activate trip',
-      };
-    }
-
-    return {
-      success: true,
-      trip: result.trip,
-    };
-  }
-
-  @ApiOperation({ summary: 'Approve trip with driver' })
+  @ApiOperation({ summary: 'Approve trip' })
   @ApiParam({ name: 'tripId', description: 'Trip ID' })
   @ApiBody({
     type: Object,
@@ -282,37 +192,13 @@ export class TripController {
   @ApiParam({ name: 'driverId', description: 'Driver ID' })
   @Post('active/drivers/:driverId')
   async getDriverActiveTrip(@Param('driverId') driverId: string) {
-    const trip = await this.tripService.findActiveByDriverId(driverId);
-
-    if (!trip) {
-      return {
-        success: false,
-        message: 'No active trip found for this driver',
-      };
-    }
-
-    return {
-      success: true,
-      trip,
-    };
+    return await this.tripService.findActiveByDriverId(driverId);
   }
 
   @ApiOperation({ summary: 'Get active trip for customer' })
   @ApiParam({ name: 'customerId', description: 'Customer ID' })
   @Post('active/customers/:customerId')
   async getCustomerActiveTrip(@Param('customerId') customerId: string) {
-    const trip = await this.tripService.findActiveByCustomerId(customerId);
-
-    if (!trip) {
-      return {
-        success: false,
-        message: 'No active trip found for this customer',
-      };
-    }
-
-    return {
-      success: true,
-      trip,
-    };
+    return await this.tripService.findActiveByCustomerId(customerId);
   }
 }

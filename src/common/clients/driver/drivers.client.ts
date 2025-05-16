@@ -1,6 +1,7 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { AxiosInstance } from 'axios';
 import { ClientsService } from '../clients.service';
+import { SetActiveTripDto } from './dto/set-active-trip.dto';
 
 @Injectable()
 export class DriversClient {
@@ -20,6 +21,25 @@ export class DriversClient {
     }
 
     const { data } = await this.httpClient.get(url);
+    return data;
+  }
+
+  async setActiveTrip(driverId: string, dto: SetActiveTripDto): Promise<any> {
+    this.logger.log(`Setting active trip for driver ${driverId}`);
+    const { data } = await this.httpClient.put(
+      `/drivers/${driverId}/active-trip`,
+      dto,
+    );
+    this.logger.log(`Successfully set active trip for driver ${driverId}`);
+    return data;
+  }
+
+  async removeActiveTrip(driverId: string): Promise<any> {
+    this.logger.log(`Removing active trip for driver ${driverId}`);
+    const { data } = await this.httpClient.delete(
+      `/drivers/${driverId}/active-trip`,
+    );
+    this.logger.log(`Successfully removed active trip for driver ${driverId}`);
     return data;
   }
 }

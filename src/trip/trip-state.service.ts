@@ -28,12 +28,15 @@ export class TripStateService {
       to: [TripStatus.WAITING_FOR_DRIVER, TripStatus.CANCELLED],
     },
     [TripStatus.APPROVED]: {
-      to: [TripStatus.DRIVER_ON_WAY, TripStatus.CANCELLED],
+      to: [TripStatus.DRIVER_ON_WAY_TO_PICKUP, TripStatus.CANCELLED],
     },
-    [TripStatus.DRIVER_ON_WAY]: {
-      to: [TripStatus.PICK_UP_ON_WAY, TripStatus.CANCELLED],
+    [TripStatus.DRIVER_ON_WAY_TO_PICKUP]: {
+      to: [TripStatus.ARRIVED_AT_PICKUP, TripStatus.CANCELLED],
     },
-    [TripStatus.PICK_UP_ON_WAY]: {
+    [TripStatus.ARRIVED_AT_PICKUP]: {
+      to: [TripStatus.TRIP_IN_PROGRESS, TripStatus.CANCELLED],
+    },
+    [TripStatus.TRIP_IN_PROGRESS]: {
       to: [TripStatus.PAYMENT, TripStatus.CANCELLED],
     },
     [TripStatus.PAYMENT]: {

@@ -72,5 +72,5 @@ export class CustomerDto {
   })
   @IsOptional()
   @IsString()
-  photoKey?: string;
+  photoUrl?: string;
 }

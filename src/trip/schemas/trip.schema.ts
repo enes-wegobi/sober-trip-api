@@ -36,7 +36,7 @@ export class Customer {
   vehicle?: Vehicle;
 
   @Prop()
-  photoKey?: string;
+  photoUrl?: string;
 }
 
 export const CustomerSchema = SchemaFactory.createForClass(Customer);
@@ -53,7 +53,7 @@ export class Driver {
   surname: string;
 
   @Prop()
-  photoKey: string;
+  photoUrl: string;
 
   @Prop()
   rate: number;

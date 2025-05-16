@@ -31,7 +31,7 @@ export class DriverDto {
   })
   @IsOptional()
   @IsString()
-  photoKey?: string;
+  photoUrl?: string;
 
   @ApiPropertyOptional({
     description: 'Driver rating',
