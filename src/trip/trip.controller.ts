@@ -248,9 +248,39 @@ export class TripController {
     };
   }
 
+  @ApiOperation({ summary: 'Decline trip with driver' })
+  @ApiParam({ name: 'tripId', description: 'Trip ID' })
+  @ApiBody({
+    type: Object,
+    schema: {
+      properties: {
+        driverId: { type: 'string' },
+      },
+    },
+  })
+  @Post(':tripId/decline')
+  async declineTrip(
+    @Param('tripId') tripId: string,
+    @Body('driverId') driverId: string,
+  ) {
+    const result = await this.tripService.rejectDriver(tripId, driverId);
+
+    if (!result.success || !result.trip) {
+      return {
+        success: false,
+        message: result.message || 'Failed to decline trip',
+      };
+    }
+
+    return {
+      success: true,
+      trip: result.trip,
+    };
+  }
+
   @ApiOperation({ summary: 'Get active trip for driver' })
   @ApiParam({ name: 'driverId', description: 'Driver ID' })
-  @Post('active/:driverId')
+  @Post('active/drivers/:driverId')
   async getDriverActiveTrip(@Param('driverId') driverId: string) {
     const trip = await this.tripService.findActiveByDriverId(driverId);
 
@@ -269,7 +299,7 @@ export class TripController {
 
   @ApiOperation({ summary: 'Get active trip for customer' })
   @ApiParam({ name: 'customerId', description: 'Customer ID' })
-  @Post('active/:customerId')
+  @Post('active/customers/:customerId')
   async getCustomerActiveTrip(@Param('customerId') customerId: string) {
     const trip = await this.tripService.findActiveByCustomerId(customerId);
 

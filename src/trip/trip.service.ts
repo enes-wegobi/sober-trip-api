@@ -250,9 +250,9 @@ export class TripService {
       return { success: false, message: TripErrors.TRIP_NOT_FOUND.message };
     }
 
-    const statusValidation = this.tripStateService.validateStatus(
+    const statusValidation = this.tripStateService.validateMultipleStatuses(
       trip.status,
-      TripStatus.DRAFT,
+      [TripStatus.DRAFT, TripStatus.DRIVER_NOT_FOUND],
     );
     if (!statusValidation.valid) {
       return {
@@ -313,13 +313,7 @@ export class TripService {
     tripId: string,
     driverId: string,
   ): Promise<{ success: boolean; trip?: TripDocument; message?: string }> {
-    return this.lockService.executeWithLock<{
-      success: boolean;
-      trip?: TripDocument;
-      message?: string;
-    }>(
-      `trip:${tripId}`,
-      async () => {
+
         const trip = await this.findTrip(tripId);
         if (!trip) {
           return { success: false, message: TripErrors.TRIP_NOT_FOUND.message };
@@ -344,10 +338,23 @@ export class TripService {
           rejectedDriverIds.push(driverId);
         }
 
+        // Check if all called drivers are now rejected
+        let newStatus = trip.status;
+        if (trip.calledDriverIds && trip.calledDriverIds.length > 0) {
+          const allDriversRejected = trip.calledDriverIds.every(id => 
+            rejectedDriverIds.includes(id)
+          );
+          
+          if (allDriversRejected) {
+            newStatus = TripStatus.DRIVER_NOT_FOUND;
+          }
+        }
+
         const updatedTrip = await this.tripRepository.findByIdAndUpdate(
           tripId,
           {
             rejectedDriverIds,
+            status: newStatus,
           },
         );
 
@@ -356,9 +363,7 @@ export class TripService {
         }
 
         return { success: true, trip: updatedTrip };
-      },
-      TripErrors.TRIP_LOCKED.message,
-    );
+
   }
 
   async cancelTrip(
