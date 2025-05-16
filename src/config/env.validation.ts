@@ -18,6 +18,9 @@ const envSchema = z.object({
   VALKEY_PASSWORD: z.string().optional(),
   VALKEY_USERNAME: z.string().optional(),
   VALKEY_TLS: z.string().optional().default('false'),
+
+  USERS_SERVICE_URL: z.string().optional().default('http://localhost:3001'),
+  USERS_SERVICE_TIMEOUT: z.coerce.number().optional().default(5000),
 });
 
 export type EnvironmentVariables = z.infer<typeof envSchema>;

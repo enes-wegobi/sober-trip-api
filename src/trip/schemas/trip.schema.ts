@@ -7,13 +7,67 @@ import { EntityDocumentHelper } from 'src/common/utils/document-helper';
 
 export type TripDocument = Trip & Document;
 
-@Schema({ timestamps: true })
-export class Trip extends EntityDocumentHelper {
-  @Prop({ required: true })
-  customerId: string;
+@Schema({ _id: false })
+export class Vehicle {
+  @Prop()
+  transmissionType?: string;
 
   @Prop()
-  driverId: string;
+  licensePlate?: string;
+}
+
+export const VehicleSchema = SchemaFactory.createForClass(Vehicle);
+
+@Schema({ _id: false })
+export class Customer {
+  @Prop({ required: true })
+  id: string;
+
+  @Prop()
+  name?: string;
+
+  @Prop()
+  surname?: string;
+
+  @Prop()
+  rate?: number;
+
+  @Prop({ type: VehicleSchema })
+  vehicle?: Vehicle;
+
+  @Prop()
+  photoKey?: string;
+}
+
+export const CustomerSchema = SchemaFactory.createForClass(Customer);
+
+@Schema({ _id: false })
+export class Driver {
+  @Prop({ required: true })
+  id: string;
+
+  @Prop()
+  name: string;
+
+  @Prop()
+  surname: string;
+
+  @Prop()
+  photoKey: string;
+
+  @Prop()
+  rate: number;
+}
+
+export const DriverSchema = SchemaFactory.createForClass(Driver);
+
+@Schema({ timestamps: true })
+export class Trip extends EntityDocumentHelper {
+  @Prop({ type: CustomerSchema, required: true })
+  customer: Customer;
+
+  @Prop({ type: DriverSchema })
+  driver: Driver;
 
   @Prop({ enum: TripStatus, default: TripStatus.DRAFT })
   status: TripStatus;
@@ -57,18 +111,15 @@ export class Trip extends EntityDocumentHelper {
 
 export const TripSchema = SchemaFactory.createForClass(Trip);
 
-// Create compound indexes for active trips
-// This ensures a customer can only have one active trip at a time
 TripSchema.index(
-  { customerId: 1, status: 1 },
+  { 'customer.id': 1, status: 1 },
   {
     unique: true,
     partialFilterExpression: { status: TripStatus.WAITING_FOR_DRIVER },
   },
 );
 
-// This ensures a driver can only have one active trip at a time
 TripSchema.index(
-  { driverId: 1, status: 1 },
+  { 'driver.id': 1, status: 1 },
   { unique: true, partialFilterExpression: { status: TripStatus.APPROVED } },
 );

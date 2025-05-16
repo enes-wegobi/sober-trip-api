@@ -1,12 +1,14 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { TripRepository } from './trip.repository';
 import { CreateTripDto } from './dto/create-trip.dto';
-import { TripDocument } from './schemas/trip.schema';
+import { TripDocument, Vehicle } from './schemas/trip.schema';
 import { UpdateTripDto } from './dto/update-trip.dto';
 import { TripStatus } from 'src/common/enums/trip-status.enum';
 import { LockService } from '../common/lock/lock.service';
 import { TripErrors } from '../exceptions/trip-errors';
 import { TripStateService } from './trip-state.service';
+import { CustomersClient } from 'src/common/clients/customer/customers.client';
+import { DriversClient } from 'src/common/clients/driver/drivers.client';
 
 @Injectable()
 export class TripService {
@@ -16,6 +18,8 @@ export class TripService {
     private readonly tripRepository: TripRepository,
     private readonly lockService: LockService,
     private readonly tripStateService: TripStateService,
+    private readonly customersClient: CustomersClient,
+    private readonly driversClient: DriversClient,
   ) {}
 
   async findTrip(tripId: string) {
@@ -34,8 +38,33 @@ export class TripService {
     return this.tripRepository.findActiveByDriverId(driverId);
   }
 
-  async createTrip(tripData: CreateTripDto): Promise<TripDocument> {
-    return this.tripRepository.createTrip(tripData);
+  async createTrip(
+    tripData: CreateTripDto,
+    customerId: string,
+  ): Promise<TripDocument> {
+    const customer = await this.customersClient.findOne(customerId, [
+      'name',
+      'surname',
+      'rate',
+      'vehicle.transmissionType',
+      'vehicle.licensePlate',
+      'photoKey',
+    ]);
+    const trip = {
+      ...tripData,
+      customer: {
+        id: customer._id,
+        name: customer.name,
+        surname: customer.surname,
+        rate: customer.rate,
+        Vehicle: {
+          transmissionType: customer.vehicle.transmissionType,
+          licensePlate: customer.vehicle.licensePlate,
+        },
+        photoKey: customer.photoKey,
+      },
+    };
+    return this.tripRepository.createTrip(trip);
   }
 
   async updateTrip(
@@ -100,14 +129,14 @@ export class TripService {
         }
 
         const { canActivate, message } = await this.canActivateTrip(
-          trip.customerId,
-          trip.driverId,
+          trip.customer?.id,
+          trip.driver?.id,
         );
         if (!canActivate) {
           return { success: false, message };
         }
 
-        const newStatus = trip.driverId
+        const newStatus = trip.driver
           ? TripStatus.APPROVED
           : TripStatus.WAITING_FOR_DRIVER;
 
@@ -264,7 +293,6 @@ export class TripService {
     const updateData: UpdateTripDto = {
       status: TripStatus.WAITING_FOR_DRIVER,
       calledDriverIds: driverIds,
-      customerId: customerId,
       callStartTime: new Date(),
       callRetryCount: newRetryCount,
     };
@@ -403,7 +431,12 @@ export class TripService {
     if (!trip) {
       return { success: false, message: TripErrors.TRIP_NOT_FOUND.message };
     }
-
+    const driver = await this.driversClient.findOne(driverId, [
+      'name',
+      'surname',
+      'rate',
+      'photoKey',
+    ]);
     const transitionValidation = this.tripStateService.canTransition(
       trip.status,
       TripStatus.APPROVED,
@@ -427,7 +460,13 @@ export class TripService {
     }
 
     const updatedTrip = await this.tripRepository.findByIdAndUpdate(tripId, {
-      driverId,
+      driver: {
+        id: driver._id,
+        name: driver.name,
+        surname: driver.surname,
+        photoKey: driver.photoKey,
+        rate: driver.rate,
+      },
       status: TripStatus.APPROVED,
     });
 

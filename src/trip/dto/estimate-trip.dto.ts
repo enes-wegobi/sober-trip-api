@@ -8,7 +8,7 @@ import {
 } from 'class-validator';
 import { Type } from 'class-transformer';
 import { RoutePoint } from '../../common/clients/maps/maps.interface';
-import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { ApiProperty } from '@nestjs/swagger';
 
 export class RoutePointDto implements RoutePoint {
   @ApiProperty({ description: 'Latitude coordinate', example: 40.7128 })

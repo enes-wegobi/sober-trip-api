@@ -42,9 +42,9 @@ export class TripRepository {
   ): Promise<TripDocument | null> {
     return this.tripModel
       .findOne({
-        customerId,
+        'customer.id': customerId,
         status: TripStatus.DRAFT,
-        driverId: null,
+        driver: null,
       })
       .sort({ createdAt: -1 })
       .exec();
@@ -55,7 +55,7 @@ export class TripRepository {
   ): Promise<TripDocument | null> {
     return this.tripModel
       .findOne({
-        customerId,
+        'customer.id': customerId,
         status: TripStatus.WAITING_FOR_DRIVER,
       })
       .exec();
@@ -64,7 +64,7 @@ export class TripRepository {
   async findActiveByDriverId(driverId: string): Promise<TripDocument | null> {
     return this.tripModel
       .findOne({
-        driverId,
+        'driver.id': driverId,
         status: TripStatus.APPROVED,
       })
       .exec();

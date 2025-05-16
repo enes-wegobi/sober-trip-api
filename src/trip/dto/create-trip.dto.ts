@@ -12,6 +12,8 @@ import { TripStatus } from '../../common/enums/trip-status.enum';
 import { PaymentStatus } from '../../common/enums/payment-status.enum';
 import { RoutePoint } from '../../common/clients/maps/maps.interface';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { CustomerDto } from './customer.dto';
+import { DriverDto } from './driver.dto';
 
 export class RoutePointDto implements RoutePoint {
   @ApiProperty({ description: 'Latitude coordinate', example: 40.7128 })
@@ -35,20 +37,22 @@ export class RoutePointDto implements RoutePoint {
 
 export class CreateTripDto {
   @ApiProperty({
-    description: 'Customer ID',
-    example: '60a1b2c3d4e5f6a7b8c9d0e2',
-  })
-  @IsNotEmpty()
-  @IsString()
-  customerId: string;
-
-  @ApiPropertyOptional({
-    description: 'Driver ID',
-    example: '60a1b2c3d4e5f6a7b8c9d0e3',
+    description: 'Customer information',
+    type: CustomerDto,
   })
   @IsOptional()
-  @IsString()
-  driverId?: string;
+  @ValidateNested()
+  @Type(() => CustomerDto)
+  customer?: CustomerDto;
+
+  @ApiPropertyOptional({
+    description: 'Driver information',
+    type: DriverDto,
+  })
+  @IsOptional()
+  @ValidateNested()
+  @Type(() => DriverDto)
+  driver?: DriverDto;
 
   @ApiProperty({
     description: 'Array of route points',

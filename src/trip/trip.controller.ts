@@ -53,15 +53,17 @@ export class TripController {
       Math.round(durationInMinutes * costPerMinute * 100) / 100;
 
     // Create a trip record
-    const trip = await this.tripService.createTrip({
-      customerId: estimateTripDto.customerId,
-      status: TripStatus.DRAFT,
-      paymentStatus: PaymentStatus.UNPAID,
-      route: estimateTripDto.route,
-      estimatedDistance: distanceMatrix.distance.value,
-      estimatedDuration: distanceMatrix.duration.value,
-      estimatedCost,
-    });
+    const trip = await this.tripService.createTrip(
+      {
+        status: TripStatus.DRAFT,
+        paymentStatus: PaymentStatus.UNPAID,
+        route: estimateTripDto.route,
+        estimatedDistance: distanceMatrix.distance.value,
+        estimatedDuration: distanceMatrix.duration.value,
+        estimatedCost,
+      },
+      estimateTripDto.customerId,
+    );
 
     return {
       success: true,
@@ -220,7 +222,11 @@ export class TripController {
   @ApiParam({ name: 'tripId', description: 'Trip ID' })
   @ApiBody({
     type: Object,
-    schema: { properties: { driverId: { type: 'string' } } },
+    schema: {
+      properties: {
+        driverId: { type: 'string' },
+      },
+    },
   })
   @Post(':tripId/approve')
   async approveTrip(
