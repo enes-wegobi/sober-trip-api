@@ -3,7 +3,7 @@ import { TripRepository } from './trip.repository';
 import { CreateTripDto } from './dto/create-trip.dto';
 import { TripDocument } from './schemas/trip.schema';
 import { UpdateTripDto } from './dto/update-trip.dto';
-import { TripStatus } from 'src/common/enums/trip-status.enum';
+import { TripStatus } from '../common/enums/trip-status.enum';
 import { LockService } from '../common/lock/lock.service';
 import { TripErrors } from '../exceptions/trip-errors';
 import { TripStateService } from './trip-state.service';
@@ -328,6 +328,61 @@ export class TripService {
     await this.driversClient.setActiveTrip(driverId, {
       tripId: updatedTrip._id,
     });
+
+    return { success: true, trip: updatedTrip };
+  }
+
+  /**
+   * Update trip status
+   * @param tripId Trip ID
+   * @param newStatus New status to set
+   * @returns Object with success flag, updated trip, and optional message
+   */
+  async updateTripStatus(
+    tripId: string,
+    newStatus: TripStatus,
+  ): Promise<{ success: boolean; trip?: TripDocument; message?: string }> {
+    const trip = await this.findTrip(tripId);
+    if (!trip) {
+      return { success: false, message: TripErrors.TRIP_NOT_FOUND.message };
+    }
+
+    // Only allow transitions to the specific statuses we want
+    if (
+      ![
+        TripStatus.DRIVER_ON_WAY_TO_PICKUP,
+        TripStatus.ARRIVED_AT_PICKUP,
+        TripStatus.TRIP_IN_PROGRESS,
+      ].includes(newStatus)
+    ) {
+      return {
+        success: false,
+        message: `Cannot update to status ${newStatus}. Only DRIVER_ON_WAY_TO_PICKUP, ARRIVED_AT_PICKUP, and TRIP_IN_PROGRESS are allowed.`,
+      };
+    }
+
+    // Validate the status transition
+    const transitionValidation = this.tripStateService.canTransition(
+      trip.status,
+      newStatus,
+    );
+    if (!transitionValidation.valid) {
+      return {
+        success: false,
+        message:
+          transitionValidation.message ||
+          TripErrors.TRIP_INVALID_STATUS.message,
+      };
+    }
+
+    // Update the trip status
+    const updatedTrip = await this.tripRepository.findByIdAndUpdate(tripId, {
+      status: newStatus,
+    });
+
+    if (!updatedTrip) {
+      return { success: false, message: 'Failed to update trip status' };
+    }
 
     return { success: true, trip: updatedTrip };
   }

@@ -4,6 +4,7 @@ import { MapsService } from '../common/clients/maps/maps.service';
 import { EstimateTripDto } from './dto/estimate-trip.dto';
 import { CallDriversDto } from './dto/call-drivers.dto';
 import { UpdateTripDto } from './dto/update-trip.dto';
+import { UpdateTripStatusDto } from './dto/update-trip-status.dto';
 import { ConfigService } from '../config/config.service';
 import { TripStatus } from '../common/enums/trip-status.enum';
 import { PaymentStatus } from '../common/enums/payment-status.enum';
@@ -200,5 +201,100 @@ export class TripController {
   @Post('active/customers/:customerId')
   async getCustomerActiveTrip(@Param('customerId') customerId: string) {
     return await this.tripService.findActiveByCustomerId(customerId);
+  }
+
+  @ApiOperation({ summary: 'Update trip status' })
+  @ApiParam({ name: 'tripId', description: 'Trip ID' })
+  @ApiBody({ type: UpdateTripStatusDto })
+  @Post(':tripId/update-status')
+  async updateTripStatus(
+    @Param('tripId') tripId: string,
+    @Body() updateTripStatusDto: UpdateTripStatusDto,
+  ) {
+    const result = await this.tripService.updateTripStatus(
+      tripId,
+      updateTripStatusDto.status,
+    );
+
+    if (!result.success || !result.trip) {
+      return {
+        success: false,
+        message: result.message || 'Failed to update trip status',
+      };
+    }
+
+    return {
+      success: true,
+      trip: result.trip,
+    };
+  }
+
+  @ApiOperation({ summary: 'Set driver on way to pickup' })
+  @ApiParam({ name: 'tripId', description: 'Trip ID' })
+  @Post(':tripId/start-pickup')
+  async setDriverOnWayToPickup(@Param('tripId') tripId: string) {
+    const result = await this.tripService.updateTripStatus(
+      tripId,
+      TripStatus.DRIVER_ON_WAY_TO_PICKUP,
+    );
+
+    if (!result.success || !result.trip) {
+      return {
+        success: false,
+        message:
+          result.message || 'Failed to update trip status to driver on way',
+      };
+    }
+
+    return {
+      success: true,
+      trip: result.trip,
+    };
+  }
+
+  @ApiOperation({ summary: 'Set driver arrived at pickup' })
+  @ApiParam({ name: 'tripId', description: 'Trip ID' })
+  @Post(':tripId/reach-pickup')
+  async setDriverArrivedAtPickup(@Param('tripId') tripId: string) {
+    const result = await this.tripService.updateTripStatus(
+      tripId,
+      TripStatus.ARRIVED_AT_PICKUP,
+    );
+
+    if (!result.success || !result.trip) {
+      return {
+        success: false,
+        message:
+          result.message || 'Failed to update trip status to arrived at pickup',
+      };
+    }
+
+    return {
+      success: true,
+      trip: result.trip,
+    };
+  }
+
+  @ApiOperation({ summary: 'Set trip in progress' })
+  @ApiParam({ name: 'tripId', description: 'Trip ID' })
+  @Post(':tripId/begin-trip')
+  async setTripInProgress(@Param('tripId') tripId: string) {
+    const result = await this.tripService.updateTripStatus(
+      tripId,
+      TripStatus.TRIP_IN_PROGRESS,
+    );
+
+    if (!result.success || !result.trip) {
+      return {
+        success: false,
+        message:
+          result.message || 'Failed to update trip status to in progress',
+      };
+    }
+
+    return {
+      success: true,
+      trip: result.trip,
+    };
   }
 }
