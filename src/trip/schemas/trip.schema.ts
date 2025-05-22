@@ -107,10 +107,16 @@ export class Trip extends EntityDocumentHelper {
 
   @Prop({ default: 0 })
   callRetryCount: number;
+
+  @Prop()
+  tripStartTime: Date;
+
+  @Prop()
+  tripEndTime: Date;
 }
 
 export const TripSchema = SchemaFactory.createForClass(Trip);
-
+//diğer statuleride ekle
 TripSchema.index(
   { 'customer.id': 1, status: 1 },
   {

@@ -297,4 +297,27 @@ export class TripController {
       trip: result.trip,
     };
   }
+
+  @ApiOperation({ summary: 'Complete trip' })
+  @ApiParam({ name: 'tripId', description: 'Trip ID' })
+  @Post(':tripId/complete')
+  async completeTrip(@Param('tripId') tripId: string) {
+    const result = await this.tripService.updateTripStatus(
+      tripId,
+      TripStatus.COMPLETED,
+    );
+
+    if (!result.success || !result.trip) {
+      return {
+        success: false,
+        message:
+          result.message || 'Failed to update trip status to completed',
+      };
+    }
+
+    return {
+      success: true,
+      trip: result.trip,
+    };
+  }
 }

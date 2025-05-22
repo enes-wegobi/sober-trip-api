@@ -154,4 +154,18 @@ export class CreateTripDto {
   @IsOptional()
   @IsNumber()
   callRetryCount?: number;
+
+  @ApiPropertyOptional({
+    description: 'Timestamp when the trip started',
+    example: '2025-05-10T19:15:00.000Z',
+  })
+  @IsOptional()
+  tripStartTime?: Date;
+
+  @ApiPropertyOptional({
+    description: 'Timestamp when the trip ended',
+    example: '2025-05-10T19:45:00.000Z',
+  })
+  @IsOptional()
+  tripEndTime?: Date;
 }

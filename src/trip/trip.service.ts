@@ -302,7 +302,7 @@ export class TripService {
           TripErrors.TRIP_INVALID_STATUS.message,
       };
     }
-
+    /*
     const driverActiveTripResult = await this.findActiveByDriverId(driverId);
     if (driverActiveTripResult.trip) {
       return {
@@ -310,7 +310,7 @@ export class TripService {
         message: `Driver already has an active trip with ID: ${driverActiveTripResult.trip._id}`,
       };
     }
-
+    */
     const updatedTrip = await this.tripRepository.findByIdAndUpdate(tripId, {
       driver: {
         id: driver._id,
@@ -320,6 +320,7 @@ export class TripService {
         rate: driver.rate,
       },
       status: TripStatus.APPROVED,
+      tripStartTime: new Date(), // Set the start time when trip is approved
     });
 
     if (!updatedTrip) {
@@ -353,11 +354,12 @@ export class TripService {
         TripStatus.DRIVER_ON_WAY_TO_PICKUP,
         TripStatus.ARRIVED_AT_PICKUP,
         TripStatus.TRIP_IN_PROGRESS,
+        TripStatus.COMPLETED, // Added COMPLETED status
       ].includes(newStatus)
     ) {
       return {
         success: false,
-        message: `Cannot update to status ${newStatus}. Only DRIVER_ON_WAY_TO_PICKUP, ARRIVED_AT_PICKUP, and TRIP_IN_PROGRESS are allowed.`,
+        message: `Cannot update to status ${newStatus}. Only DRIVER_ON_WAY_TO_PICKUP, ARRIVED_AT_PICKUP, TRIP_IN_PROGRESS, and COMPLETED are allowed.`,
       };
     }
 
@@ -375,7 +377,21 @@ export class TripService {
       };
     }
 
-    // Update the trip status
+    // Set trip end time if status is COMPLETED
+    if (newStatus === TripStatus.COMPLETED) {
+      const updatedTrip = await this.tripRepository.findByIdAndUpdate(tripId, {
+        status: newStatus,
+        tripEndTime: new Date(), // Set the end time when trip is completed
+      });
+
+      if (!updatedTrip) {
+        return { success: false, message: 'Failed to update trip status' };
+      }
+
+      return { success: true, trip: updatedTrip };
+    }
+
+    // Update the trip status for other statuses
     const updatedTrip = await this.tripRepository.findByIdAndUpdate(tripId, {
       status: newStatus,
     });
